@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalender</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="calendar-wrapper">
+            <!-- Header dengan navigasi -->
+            <div class="calendar-header">
+                <button id="prevBtn" class="btn-nav">← Sebelumnya</button>
+                <div class="month-year">
+                    <h1 id="monthYear"></h1>
+                </div>
+                <button id="nextBtn" class="btn-nav">Selanjutnya →</button>
+            </div>
+
+            <button id="todayBtn" class="btn-today">Hari Ini</button>
+
+            <!-- Grid kalender -->
+            <div class="calendar-grid">
+                <!-- Header hari -->
+                <div class="day-header">Minggu</div>
+                <div class="day-header">Senin</div>
+                <div class="day-header">Selasa</div>
+                <div class="day-header">Rabu</div>
+                <div class="day-header">Kamis</div>
+                <div class="day-header">Jumat</div>
+                <div class="day-header">Sabtu</div>
+
+                <!-- Tanggal akan di-generate oleh JS -->
+                <div id="calendarDates" class="calendar-dates"></div>
+            </div>
+        </div>
+
+        <!-- Sidebar event -->
+        <div class="sidebar">
+            <h2>Event</h2>
+            <div id="selectedDateLabel" class="selected-date-label">Pilih tanggal</div>
+            <div id="eventList" class="event-list"></div>
+            <div id="eventForm" class="event-form" style="display: none;">
+                <input
+                    type="text"
+                    id="eventTitle"
+                    class="event-input"
+                    placeholder="Judul event"
+                    maxlength="50"
+                >
+                <textarea
+                    id="eventDesc"
+                    class="event-input"
+                    placeholder="Deskripsi (opsional)"
+                    rows="3"
+                    maxlength="200"
+                ></textarea>
+                <div class="form-buttons">
+                    <button id="addEventBtn" class="btn-add">Tambah</button>
+                    <button id="cancelEventBtn" class="btn-cancel">Batal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal untuk konfirmasi hapus -->
+    <div id="deleteModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>Hapus event?</h3>
+            <p id="deleteEventTitle"></p>
+            <div class="modal-buttons">
+                <button id="confirmDeleteBtn" class="btn-delete">Hapus</button>
+                <button id="cancelDeleteBtn" class="btn-cancel">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
