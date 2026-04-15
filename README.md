@@ -58,6 +58,19 @@ Aplikasi kalender sederhana yang dibuat dengan vanilla JavaScript, HTML5, dan CS
 - Dropdown hasil dengan tanggal event
 - Klik hasil untuk langsung navigasi ke tanggal
 
+✨ **Navigasi Cepat (Date Picker)**
+- Dropdown tahun (2000-2100) — pilih tahun langsung
+- Dropdown bulan (Januari-Desember) — pilih bulan langsung
+- Dropdown tanggal (1-31, auto-adjust sesuai bulan)
+- Lompat langsung ke tanggal tertentu tanpa geser berkali-kali
+- Dropdowns auto-populate saat tahun/bulan berubah
+
+🔧 **Bug Fix: Timezone Export**
+- Memperbaiki bug tanggal yang bergeser 1 hari saat export
+- Ganti dari `toISOString()` (UTC) ke local date components
+- Event tanggal 25 sekarang tetap ter-export sebagai 25
+- Konsisten di semua timezone (WIB, WITA, WIT)
+
 ## Cara Menggunakan
 
 1. **Buka file `index.html` di browser** (double-click atau drag ke browser)
@@ -105,6 +118,14 @@ Aplikasi kalender sederhana yang dibuat dengan vanilla JavaScript, HTML5, dan CS
     - Event "Hari ini" ditampilkan dengan indikator khusus
     - Klik event untuk navigasi langsung ke tanggal tersebut
 
+11. **Navigasi Cepat (Date Picker)**
+    - Gunakan dropdown tahun, bulan, dan tanggal di bawah header kalender
+    - Pilih tahun (2000-2100) dari dropdown pertama
+    - Pilih bulan (Januari-Desember) dari dropdown kedua
+    - Pilih tanggal (1-31) dari dropdown ketiga
+    - Kalender akan langsung navigate ke tanggal pilihan
+    - Dropdowns otomatis ter-reset setelah navigasi
+
 ## Struktur File
 
 ```
@@ -128,7 +149,9 @@ Tidak menggunakan framework atau library eksternal apapun.
 
 - Data event disimpan di `localStorage` dengan key `calendarEvents`
 - Preferensi tema disimpan dengan key `calendarTheme`
-- Format tanggal menggunakan ISO 8601 (`YYYY-MM-DD`)
+- **Format tanggal lokal** (`YYYY-MM-DD`) — menggunakan local date components bukan UTC
+- **Timezone handling**: `getDateKey()` menggunakan `getFullYear()`, `getMonth()`, `getDate()` untuk avoid UTC conversion
+- **Date parsing**: `parseDateKey()` function untuk parse date string dengan benar (tidak menggunakan `new Date('YYYY-MM-DD')` yang parse sebagai UTC)
 - Penanganan tahun kabisat otomatis (menggunakan API `Date` bawaan JavaScript)
 - XSS protection: semua user input di-escape sebelum ditampilkan di HTML
 - **CSS Variables** untuk theming: semua warna dapat dikontrol melalui `:root` dan `body.dark-mode`
@@ -140,6 +163,7 @@ Tidak menggunakan framework atau library eksternal apapun.
   - Pribadi: Pink (#ec4899)
   - Penting: Amber (#f59e0b)
   - Lainnya: Purple (#667eea)
+- **Date Picker**: Dropdowns populate otomatis berdasarkan tahun/bulan (handle leap years, varying month lengths)
 
 ## Browser Support
 
@@ -221,7 +245,13 @@ Bebas digunakan dan dimodifikasi. Tidak ada lisensi khusus.
 
 ## Version History
 
-### v2.0 (Latest)
+### v3.0 (Latest)
+- ✅ Perbaiki timezone bug export (tanggal tidak bergeser)
+- ✅ Tambah navigasi cepat dengan date picker (tahun/bulan/tanggal)
+- ✅ Automatic date components calculation untuk timezone consistency
+- ✅ Auto-populate date dropdown sesuai bulan yang dipilih
+
+### v2.0
 - Tambah mode gelap/terang
 - Tambah highlight weekend
 - Tambah export/import JSON
