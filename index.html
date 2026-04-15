@@ -7,6 +7,20 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Top bar dengan theme toggle dan search -->
+    <div class="top-bar">
+        <div class="search-container">
+            <input
+                type="text"
+                id="searchInput"
+                class="search-input"
+                placeholder="Cari event..."
+            >
+            <div id="searchResults" class="search-results" style="display: none;"></div>
+        </div>
+        <button id="themeToggle" class="btn-theme">🌙</button>
+    </div>
+
     <div class="container">
         <div class="calendar-wrapper">
             <!-- Header dengan navigasi -->
@@ -19,6 +33,9 @@
             </div>
 
             <button id="todayBtn" class="btn-today">Hari Ini</button>
+
+            <!-- Panel upcoming events -->
+            <div id="upcomingPanel" class="upcoming-panel"></div>
 
             <!-- Grid kalender -->
             <div class="calendar-grid">
@@ -38,8 +55,25 @@
 
         <!-- Sidebar event -->
         <div class="sidebar">
-            <h2>Event</h2>
+            <div class="sidebar-header">
+                <h2>Event</h2>
+                <div class="sidebar-buttons">
+                    <button id="exportBtn" class="btn-icon" title="Export">📥</button>
+                    <button id="importBtn" class="btn-icon" title="Import">📤</button>
+                    <input type="file" id="importFile" style="display: none;" accept=".json">
+                </div>
+            </div>
             <div id="selectedDateLabel" class="selected-date-label">Pilih tanggal</div>
+
+            <!-- Filter kategori -->
+            <select id="categoryFilter" class="category-filter">
+                <option value="">Semua Kategori</option>
+                <option value="Kerja">Kerja</option>
+                <option value="Pribadi">Pribadi</option>
+                <option value="Penting">Penting</option>
+                <option value="Lainnya">Lainnya</option>
+            </select>
+
             <div id="eventList" class="event-list"></div>
             <div id="eventForm" class="event-form" style="display: none;">
                 <input
@@ -56,6 +90,13 @@
                     rows="3"
                     maxlength="200"
                 ></textarea>
+                <select id="eventCategory" class="event-input">
+                    <option value="Lainnya">Pilih Kategori</option>
+                    <option value="Kerja">Kerja</option>
+                    <option value="Pribadi">Pribadi</option>
+                    <option value="Penting">Penting</option>
+                    <option value="Lainnya">Lainnya</option>
+                </select>
                 <div class="form-buttons">
                     <button id="addEventBtn" class="btn-add">Tambah</button>
                     <button id="cancelEventBtn" class="btn-cancel">Batal</button>

@@ -1,58 +1,76 @@
-# Issue: Membuat Aplikasi Kalender dengan JavaScript
+# Issue: Fitur Tambahan Aplikasi Kalender
 
 ## Tujuan
-Membuat aplikasi kalender sederhana berbasis web menggunakan JavaScript (vanilla JS, tanpa framework berat) yang dapat menampilkan kalender bulanan dan mendukung fitur dasar manajemen event.
+Menambahkan fitur-fitur lanjutan ke aplikasi kalender yang sudah ada untuk meningkatkan pengalaman pengguna dan memperluas fungsionalitas.
 
-## Scope / Lingkup
-Aplikasi web statis (HTML + CSS + JS) yang bisa dibuka langsung di browser tanpa backend.
+## Prasyarat
+Aplikasi kalender dasar sudah terimplementasi (index.html, style.css, app.js) dengan fitur tampilan bulanan, navigasi, dan manajemen event via localStorage.
 
-## Struktur Project (High Level)
-- `index.html` — entry point halaman
-- `style.css` — styling kalender
-- `app.js` — logika utama kalender
-- `README.md` — dokumentasi singkat cara menjalankan
+## Fitur yang Akan Ditambahkan
 
-## Fitur Utama
-1. **Tampilan Kalender Bulanan**
-   - Menampilkan grid tanggal untuk bulan berjalan
-   - Menandai tanggal hari ini dengan jelas
-   - Menampilkan nama bulan dan tahun di header
+### 1. Mode Gelap/Terang (Dark/Light Mode)
+- Tombol toggle untuk beralih antara tema gelap dan terang
+- Simpan preferensi tema di `localStorage`
+- Transisi halus antar tema (CSS transition)
+- Semua elemen UI menyesuaikan warna (kalender, sidebar, modal, form)
 
-2. **Navigasi Bulan**
-   - Tombol "Previous" dan "Next" untuk berpindah bulan
-   - Tombol "Today" untuk kembali ke bulan ini
+### 2. Highlight Hari Weekend
+- Kolom Sabtu dan Minggu diberi warna background berbeda
+- Tanggal di hari weekend punya styling khusus (misal: warna teks berbeda)
+- Tetap terlihat jelas di mode gelap maupun terang
 
-3. **Manajemen Event (Sederhana)**
-   - User dapat klik tanggal untuk menambah event (judul + deskripsi)
-   - Tanggal yang memiliki event diberi indikator visual (misal: titik/warna)
-   - Event disimpan di `localStorage` agar persist setelah refresh
-   - User dapat melihat daftar event pada tanggal tertentu
-   - User dapat menghapus event
+### 3. Export/Import Event (JSON)
+- **Export:** Tombol untuk download semua event sebagai file `.json`
+  - Format file: timestamp + data event (contoh: `calendar-events-2026-04-15.json`)
+- **Import:** Tombol upload file JSON untuk restore event
+  - Validasi format file sebelum import
+  - Opsi: merge dengan data existing atau replace semua
 
-4. **Responsive Design**
-   - Tampilan menyesuaikan di desktop dan mobile
+### 4. Notifikasi Event Mendatang
+- Tampilkan panel/banner untuk event dalam 7 hari ke depan
+- Urutkan berdasarkan tanggal terdekat
+- Indikator visual untuk event "hari ini" dan "besok"
+- Opsional: browser notification API untuk reminder (dengan permission)
+
+### 5. Kategori Event dengan Warna
+- Dropdown kategori saat menambah event (contoh: Kerja, Pribadi, Penting, Lainnya)
+- Setiap kategori punya warna khas (config warna di satu tempat)
+- Indikator warna di tanggal sesuai kategori event
+- Filter event berdasarkan kategori di sidebar
+
+### 6. Search Event
+- Input pencarian di sidebar atau header
+- Cari berdasarkan judul dan deskripsi event
+- Tampilkan hasil pencarian dengan tanggal event
+- Klik hasil untuk langsung navigasi ke tanggal tersebut
+- Real-time search (as-you-type)
 
 ## Teknologi
-- HTML5, CSS3, JavaScript (ES6+)
-- Tidak menggunakan framework (React/Vue/dll)
-- Tidak menggunakan library eksternal — gunakan `Date` bawaan JavaScript
-- Storage: `localStorage` browser
+- Tetap vanilla JavaScript (ES6+), HTML5, CSS3
+- Tidak menggunakan framework/library eksternal
+- Gunakan CSS variables untuk theming
+- Gunakan `localStorage` untuk preferensi dan data
 
 ## Acceptance Criteria
-- [ ] Kalender tampil dengan benar untuk bulan manapun (termasuk penanganan tahun kabisat)
-- [ ] Hari pertama setiap bulan jatuh di kolom hari yang benar
-- [ ] Navigasi antar bulan berfungsi tanpa bug
-- [ ] Event yang ditambahkan tetap ada setelah halaman di-refresh
-- [ ] UI bersih dan mudah dipahami
-- [ ] Kode terorganisir, tidak semua ditumpuk dalam satu function besar
+- [ ] Mode gelap/terang berfungsi dan preferensi tersimpan
+- [ ] Weekend ter-highlight dengan jelas di kedua mode
+- [ ] Export menghasilkan file JSON valid, import berhasil me-restore event
+- [ ] Notifikasi event mendatang tampil dengan benar
+- [ ] Kategori dengan warna tampil konsisten di kalender dan sidebar
+- [ ] Search berfungsi real-time dan hasilnya clickable
+- [ ] Semua fitur lama tetap berfungsi (tidak ada regresi)
+- [ ] Responsive di mobile & desktop
 
 ## Catatan untuk Implementer
-- Fokus pada kesederhanaan dan keterbacaan kode
-- Pisahkan logika (manipulasi tanggal, storage, rendering) menjadi fungsi-fungsi kecil
-- Uji manual dengan berpindah ke bulan Februari (termasuk tahun kabisat) dan bulan dengan 31 hari
-- Tidak perlu membuat build system — cukup file statis yang langsung bisa dibuka di browser
+- Gunakan CSS variables (custom properties) untuk memudahkan theming
+- Pisahkan logika tiap fitur ke fungsi-fungsi kecil yang jelas
+- Update struktur data event jika perlu (tambah field `category`), dengan migrasi data lama
+- Uji import dengan file JSON yang invalid untuk memastikan error handling
+- Pastikan search case-insensitive
+- Jaga UI tetap clean dan tidak terlalu padat meskipun fitur bertambah
 
 ## Nice to Have (Opsional)
-- Pilihan mode gelap/terang
-- Highlight hari weekend dengan warna berbeda
-- Export/import event dalam format JSON
+- Animasi transisi antar bulan
+- Keyboard shortcut (panah kiri/kanan untuk navigasi bulan)
+- Drag & drop event antar tanggal
+- Multi-select untuk hapus/pindah banyak event sekaligus
