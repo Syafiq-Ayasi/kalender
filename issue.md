@@ -1,76 +1,83 @@
-# Issue: Fitur Tambahan Aplikasi Kalender
+# Issue: Navigasi Cepat & Perbaikan Bug Export Tanggal
 
 ## Tujuan
-Menambahkan fitur-fitur lanjutan ke aplikasi kalender yang sudah ada untuk meningkatkan pengalaman pengguna dan memperluas fungsionalitas.
+Menambahkan fitur navigasi cepat untuk memilih tahun/bulan/tanggal secara langsung (tidak harus geser kiri-kanan), serta memperbaiki bug pada export/import event yang menyebabkan tanggal bergeser mundur satu hari.
 
 ## Prasyarat
-Aplikasi kalender dasar sudah terimplementasi (index.html, style.css, app.js) dengan fitur tampilan bulanan, navigasi, dan manajemen event via localStorage.
+Aplikasi kalender sudah terimplementasi dengan fitur v2.0 (dark mode, kategori, search, export/import, dll).
 
 ## Fitur yang Akan Ditambahkan
 
-### 1. Mode Gelap/Terang (Dark/Light Mode)
-- Tombol toggle untuk beralih antara tema gelap dan terang
-- Simpan preferensi tema di `localStorage`
-- Transisi halus antar tema (CSS transition)
-- Semua elemen UI menyesuaikan warna (kalender, sidebar, modal, form)
+### 1. Navigasi Cepat (Date Picker)
+Saat ini navigasi hanya bisa geser kiri/kanan satu bulan — tidak efisien untuk pindah ke tahun/bulan yang jauh.
 
-### 2. Highlight Hari Weekend
-- Kolom Sabtu dan Minggu diberi warna background berbeda
-- Tanggal di hari weekend punya styling khusus (misal: warna teks berbeda)
-- Tetap terlihat jelas di mode gelap maupun terang
+**Kebutuhan:**
+- **Dropdown/selector Tahun** — pilih tahun langsung (range wajar, misal 1990–2100)
+- **Dropdown/selector Bulan** — pilih bulan langsung (Januari–Desember)
+- **Input tanggal langsung** — kalau user mau langsung lompat ke tanggal spesifik
+- Tombol "Go" atau langsung update kalender saat dropdown berubah
+- Letakkan di header kalender agar mudah diakses
+- Tetap jaga UI clean, jangan ramai
 
-### 3. Export/Import Event (JSON)
-- **Export:** Tombol untuk download semua event sebagai file `.json`
-  - Format file: timestamp + data event (contoh: `calendar-events-2026-04-15.json`)
-- **Import:** Tombol upload file JSON untuk restore event
-  - Validasi format file sebelum import
-  - Opsi: merge dengan data existing atau replace semua
+**Alternative UI:**
+- Klik pada judul "Januari 2026" di header → buka popup/modal picker
+- Atau tampilkan dropdown inline di header
 
-### 4. Notifikasi Event Mendatang
-- Tampilkan panel/banner untuk event dalam 7 hari ke depan
-- Urutkan berdasarkan tanggal terdekat
-- Indikator visual untuk event "hari ini" dan "besok"
-- Opsional: browser notification API untuk reminder (dengan permission)
+### 2. Perbaikan Bug Export Tanggal (Timezone Issue)
+**Masalah saat ini:**
+Event yang dibuat pada tanggal 25 bisa terbaca menjadi tanggal 24 (atau hari sebelumnya) saat di-export, karena `toISOString()` mengubah ke UTC sementara user berada di timezone positif (WIB/UTC+7 dll).
 
-### 5. Kategori Event dengan Warna
-- Dropdown kategori saat menambah event (contoh: Kerja, Pribadi, Penting, Lainnya)
-- Setiap kategori punya warna khas (config warna di satu tempat)
-- Indikator warna di tanggal sesuai kategori event
-- Filter event berdasarkan kategori di sidebar
+**Root cause:**
+Fungsi `getDateKey()` menggunakan `date.toISOString()` yang mengkonversi ke UTC. Untuk timezone WIB (UTC+7), tanggal 25 jam 00:00 WIB = tanggal 24 jam 17:00 UTC, sehingga toISOString menghasilkan string "2026-04-24" bukan "2026-04-25".
 
-### 6. Search Event
-- Input pencarian di sidebar atau header
-- Cari berdasarkan judul dan deskripsi event
-- Tampilkan hasil pencarian dengan tanggal event
-- Klik hasil untuk langsung navigasi ke tanggal tersebut
-- Real-time search (as-you-type)
+**Solusi:**
+- Gunakan local date components (getFullYear, getMonth, getDate) untuk membuat date key
+- Format: `YYYY-MM-DD` berdasarkan waktu lokal, bukan UTC
+- Pastikan semua fungsi yang membuat/membaca date key konsisten
+- Uji di berbagai timezone (WIB, WITA, WIT)
 
-## Teknologi
-- Tetap vanilla JavaScript (ES6+), HTML5, CSS3
-- Tidak menggunakan framework/library eksternal
-- Gunakan CSS variables untuk theming
-- Gunakan `localStorage` untuk preferensi dan data
+**Dampak:**
+- Fungsi `getDateKey()` perlu diperbaiki
+- Semua event yang tersimpan dengan key salah mungkin perlu migrasi (opsional, atau clear ulang)
+- Export dan import harus menghasilkan tanggal yang konsisten dengan display
 
 ## Acceptance Criteria
-- [ ] Mode gelap/terang berfungsi dan preferensi tersimpan
-- [ ] Weekend ter-highlight dengan jelas di kedua mode
-- [ ] Export menghasilkan file JSON valid, import berhasil me-restore event
-- [ ] Notifikasi event mendatang tampil dengan benar
-- [ ] Kategori dengan warna tampil konsisten di kalender dan sidebar
-- [ ] Search berfungsi real-time dan hasilnya clickable
-- [ ] Semua fitur lama tetap berfungsi (tidak ada regresi)
-- [ ] Responsive di mobile & desktop
+- [ ] Tahun dapat dipilih langsung lewat dropdown/input
+- [ ] Bulan dapat dipilih langsung lewat dropdown
+- [ ] User dapat lompat ke tanggal manapun tanpa geser berkali-kali
+- [ ] Event yang dibuat tanggal 25 tetap tersimpan & ter-export sebagai tanggal 25
+- [ ] Export/import tidak mengubah tanggal event
+- [ ] Testing di timezone Indonesia (WIB/WITA/WIT) menunjukkan tanggal konsisten
+- [ ] UI tetap clean dan mobile-friendly
+- [ ] Tidak ada regresi di fitur existing
 
 ## Catatan untuk Implementer
-- Gunakan CSS variables (custom properties) untuk memudahkan theming
-- Pisahkan logika tiap fitur ke fungsi-fungsi kecil yang jelas
-- Update struktur data event jika perlu (tambah field `category`), dengan migrasi data lama
-- Uji import dengan file JSON yang invalid untuk memastikan error handling
-- Pastikan search case-insensitive
-- Jaga UI tetap clean dan tidak terlalu padat meskipun fitur bertambah
+
+### Untuk Navigasi Cepat:
+- Gunakan `<select>` HTML native untuk dropdown (lebih simple & accessible)
+- Update kalender otomatis saat dropdown berubah (event listener `change`)
+- Tambahkan ke CSS variables yang sudah ada untuk konsistensi theme
+- Responsive di mobile (jangan sampai dropdown kepotong)
+
+### Untuk Bug Export:
+- Ganti `date.toISOString().split('T')[0]` dengan format manual:
+  ```
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+  ```
+- Atau gunakan helper function yang konsisten di seluruh kode
+- Cek fungsi `isToday`, `isSameDate`, dan rendering kalender juga — pastikan semua pakai local date
+- Saat parse kembali dari date key (import atau click), hati-hati dengan `new Date('2026-04-25')` karena ini diparse sebagai UTC midnight, bukan local — gunakan split manual atau `new Date(year, month-1, day)`
+
+### UX Considerations:
+- Saat user pilih tahun/bulan tapi belum pilih tanggal, default ke tanggal 1
+- Jika user pilih tanggal > jumlah hari di bulan itu, fallback ke tanggal akhir bulan
+- Tombol "Hari Ini" tetap harus berfungsi sebagai shortcut
 
 ## Nice to Have (Opsional)
-- Animasi transisi antar bulan
-- Keyboard shortcut (panah kiri/kanan untuk navigasi bulan)
-- Drag & drop event antar tanggal
-- Multi-select untuk hapus/pindah banyak event sekaligus
+- Keyboard shortcut untuk buka date picker (misal: `Ctrl+G` untuk "Go to date")
+- Animasi smooth saat berpindah jauh antar bulan/tahun
+- History navigasi (back/forward seperti browser)
+- Highlight tanggal-tanggal dengan banyak event saat scroll tahun

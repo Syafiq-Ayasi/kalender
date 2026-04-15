@@ -153,6 +153,36 @@ body {
     transition: background 0.3s ease;
 }
 
+/* Quick date picker */
+.quick-date-picker {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.date-select {
+    flex: 1;
+    min-width: 100px;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 13px;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+.date-select:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+}
+
+.date-select:hover {
+    border-color: var(--accent-primary);
+}
+
 .calendar-header {
     display: flex;
     justify-content: space-between;

@@ -10,6 +10,83 @@ const categoryColors = {
     'Lainnya': '#667eea'
 };
 
+// ===== DATE PICKER MANAGEMENT =====
+function initDatePickers() {
+    const yearSelect = document.getElementById('yearSelect');
+    const monthSelect = document.getElementById('monthSelect');
+    const dateSelect = document.getElementById('dateSelect');
+
+    // Populate years (2000-2100)
+    for (let year = 2000; year <= 2100; year++) {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        yearSelect.appendChild(option);
+    }
+
+    // Populate months
+    const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                       'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    monthNames.forEach((month, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = month;
+        monthSelect.appendChild(option);
+    });
+
+    // Event listeners
+    yearSelect.addEventListener('change', updateDatePickers);
+    monthSelect.addEventListener('change', updateDatePickers);
+    dateSelect.addEventListener('change', navigateToSelectedDate);
+}
+
+function updateDatePickers() {
+    const yearSelect = document.getElementById('yearSelect');
+    const monthSelect = document.getElementById('monthSelect');
+    const dateSelect = document.getElementById('dateSelect');
+
+    // Only populate dates if both year and month are selected
+    if (yearSelect.value === '' || monthSelect.value === '') {
+        dateSelect.innerHTML = '<option>Pilih Tanggal</option>';
+        return;
+    }
+
+    const year = parseInt(yearSelect.value);
+    const month = parseInt(monthSelect.value);
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    dateSelect.innerHTML = '<option>Pilih Tanggal</option>';
+    for (let day = 1; day <= daysInMonth; day++) {
+        const option = document.createElement('option');
+        option.value = day;
+        option.textContent = day;
+        dateSelect.appendChild(option);
+    }
+}
+
+function navigateToSelectedDate() {
+    const yearSelect = document.getElementById('yearSelect');
+    const monthSelect = document.getElementById('monthSelect');
+    const dateSelect = document.getElementById('dateSelect');
+
+    if (yearSelect.value === '' || monthSelect.value === '' || dateSelect.value === '') {
+        return;
+    }
+
+    const year = parseInt(yearSelect.value);
+    const month = parseInt(monthSelect.value);
+    const day = parseInt(dateSelect.value);
+
+    currentDate = new Date(year, month, day);
+    renderCalendar();
+
+    // Reset dropdowns
+    yearSelect.value = '';
+    monthSelect.value = '';
+    dateSelect.value = '';
+    dateSelect.innerHTML = '<option>Pilih Tanggal</option>';
+}
+
 // ===== THEME MANAGEMENT =====
 function initTheme() {
     const savedTheme = localStorage.getItem('calendarTheme') || 'light';
@@ -47,7 +124,11 @@ function saveEvents() {
 }
 
 function getDateKey(date) {
-    return date.toISOString().split('T')[0];
+    // Fix timezone bug: use local date components instead of UTC
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
 }
 
 // ===== DATE UTILITY FUNCTIONS =====
@@ -81,8 +162,7 @@ function getUpcomingEvents(days = 7) {
     const today = new Date();
 
     for (let i = 0; i < days; i++) {
-        const date = new Date(today);
-        date.setDate(date.getDate() + i);
+        const date = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
         const dateKey = getDateKey(date);
 
         if (events[dateKey]) {
@@ -100,10 +180,17 @@ function getUpcomingEvents(days = 7) {
 }
 
 // ===== SEARCH FUNCTIONS =====
+function parseDateKey(dateKey) {
+    // Parse date key string (YYYY-MM-DD) to local Date object
+    // Avoid timezone issues by parsing components manually
+    const [year, month, day] = dateKey.split('-').map(Number);
+    return new Date(year, month - 1, day);
+}
+
 function buildSearchIndex() {
     allEventsForSearch = [];
     for (const dateKey in events) {
-        const date = new Date(dateKey);
+        const date = parseDateKey(dateKey);
         events[dateKey].forEach((event, index) => {
             allEventsForSearch.push({
                 ...event,
@@ -514,5 +601,6 @@ document.addEventListener('click', (e) => {
 
 // ===== INITIALIZATION =====
 initTheme();
+initDatePickers();
 loadEvents();
 renderCalendar();
